@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+  <title>Searcher</title>
+  <style>
+    body {
+      background-color: #ffffff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 120px;
+    }
+
+    .logo {
+      font-family: "Times New Roman", serif;
+      font-size: 64px;
+      color: black;
+      letter-spacing: 2px;
+    }
+
+    .search-box {
+      margin-top: 30px;
+    }
+
+    input[type="text"] {
+      width: 480px;
+      height: 34px;
+      font-size: 16px;
+      padding: 4px 10px;
+      border: 1px solid #b5b5b5;
+      border-radius: 2px;
+      background-color: #ffffff;
+    }
+
+    .yellow-btn {
+      display: inline-block;
+      padding: 6px 18px;
+      margin: 6px 0;
+      background: linear-gradient(#fff6a0,#e1c100);
+      border: 1px solid #c0c0c0;
+      border-radius: 3px;
+      box-shadow: 0 1px 1px #aaa;
+      text-decoration: none;
+      color: black;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .yellow-btn:hover {
+      background: linear-gradient(#fffec0, #d4b400);
+    }
+
+    .web-btn {
+      color: #0000cc;
+      text-decoration: underline;
+      font-size: 15px;
+    }
+
+    #results {
+      margin-top: 40px;
+      font-family: Arial;
+      width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+
+    .footer {
+      margin-top: 80px;
+      font-size: 12px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">Searcher</div>
+
+  <form class="search-box" onsubmit="search(event)">
+    <input type="text" id="query" placeholder="Search the web or type URL..." required />
+    <br />
+    <input type="submit" class="yellow-btn" value="Search" />
+  </form>
+
+  <div id="results"></div>
+
+  <div class="footer">© 2025 Searcher Search Engine · Powered by <a href="https://www.duckduckgo.com">DuckDuckGo</a> & <a href="https://www.wikipedia.com"></a>Wikipedia</div>
+
+  <script>
+    async function fetchSearch(q) {
+      let url = `https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&no_html=1&no_redirect=1`;
+      let res = await fetch(url);
+      return await res.json();
+    }
+
+    async function fetchWiki(q) {
+      let wikiApi = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(q)}`;
+      let fandomApi = `https://community.fandom.com/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&utf8=1`; 
+      let wikiData = null;
+      let fandomData = null;
+      try {
+        wikiData = await (await fetch(wikiApi)).json();
+      } catch {}
+      try {
+        fandomData = await (await fetch(fandomApi)).json();
+      } catch {}
+      return {wikiData, fandomData};
+    }
+
+    function yellowBtn(url, text){
+      return `<a href='${url}' target='_blank' class='yellow-btn'>${text}</a>`;
+    }
+
+    function isDomainOrURL(str) {
+      return /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/.*)?$/.test(str);
+    }
+
+    async function search(e) {
+      e.preventDefault();
+      let q = document.getElementById("query").value.trim();
+      let resDiv = document.getElementById("results");
+      resDiv.innerHTML = `<h2 style='font-family:"Times New Roman";'>Searching "${q}"...</h2>`;
+
+      if(isDomainOrURL(q)){
+        let fullUrl = q;
+        if(!/^https?:\/\//i.test(q)) fullUrl = 'https://' + q;
+        try {
+          await fetch(fullUrl, {method:'HEAD', mode:'no-cors'});
+          resDiv.innerHTML = `<p>Landing to ${fullUrl}...</p>`;
+          setTimeout(()=>{ window.location.href = fullUrl; }, 1000);
+        } catch {
+          resDiv.innerHTML = `<p>The URL you typed was incorrect or doesn't exist</p>`;
+        }
+        return;
+      }
+
+      let {wikiData, fandomData} = await fetchWiki(q);
+      let searchData = await fetchSearch(q);
+      let links = searchData.RelatedTopics;
+      let html = `<h3>Showing results of: "${q}"</h3>`;
+
+      html += `<h3>Websites</h3><ul>`;
+      let anyResult = false;
+      for (let i = 0; i < links.length && i < 10; i++) {
+        if (links[i].FirstURL) {
+          anyResult = true;
+          html += `<li><a class='web-btn' href='${links[i].FirstURL}' target='_blank'>${links[i].Text}</a></li>`;
+        }
+      }
+      html += `</ul>`;
+      if(!anyResult) html += `<p>No additional results found about "${q}"</p><br><button class='yellow-btn' onclick='window.open(\`https://www.google.com/search?q=${encodeURIComponent(q)}\`, "_blank")'>Try searching on Google</button>`;
+
+      html += `<h3>Researches</h3>`;
+      let researchFound = false;
+      if(wikiData && wikiData.extract){
+        let lines = wikiData.extract.split(". ").slice(0,8).join(". ") + ".";
+        html += `<p>${lines}</p>`;
+        researchFound = true;
+        if(wikiData.content_urls && wikiData.content_urls.desktop && wikiData.content_urls.desktop.page){
+          html += yellowBtn(wikiData.content_urls.desktop.page, "Read Full Wikipedia Article");
+        }
+      }
+      if(fandomData && fandomData.query && fandomData.query.search && fandomData.query.search.length){
+        let items = fandomData.query.search.slice(0,3);
+        for(let item of items){
+          html += `<p><a class='web-btn' href='https://community.fandom.com/wiki/${encodeURIComponent(item.title)}' target='_blank'>${item.title} - Fandom</a></p>`;
+        }
+        researchFound = true;
+      }
+      if(!researchFound) html += `<p>No research found about "${q}"</p>`;
+
+      resDiv.innerHTML = html;
+    }
+  </script>
+</body>
+</html>
