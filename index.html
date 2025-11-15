@@ -6,129 +6,151 @@
   <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
   <title>Searcher</title>
   <style>
-    /* Global fixes */
-    html, body {
-      overflow-x: hidden;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-    }
   
-    * {
-      box-sizing: border-box;
-      max-width: 100%;
-    }
+  /* KILL ALL HORIZONTAL SCROLL */
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden !important;
+    width: 100%;
+  }
+  
+  /* Make sure NO element can overflow */
+  * {
+    box-sizing: border-box;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+  
+  body {
+    background-color: #ffffff;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 120px;
+  }
+  
+  /* LOGO */
+  .logo {
+    font-family: "Times New Roman", serif;
+    font-size: 64px;
+    color: black;
+    letter-spacing: 2px;
+    width: 100%;
+  }
+  
+  /* SEARCH INPUT */
+  input[type="text"] {
+    width: 480px;
+    max-width: 90%;
+    height: 34px;
+    font-size: 16px;
+    padding: 4px 10px;
+    border: 1px solid #b5b5b5;
+    border-radius: 2px;
+    background-color: #ffffff;
+    margin: 0 auto;
+    display: block;
+  }
+  
+  /* BUTTON */
+  .yellow-btn {
+    display: inline-block;
+    padding: 6px 18px;
+    margin: 6px 0;
+    background: linear-gradient(#fff6a0,#e1c100);
+    border: 1px solid #c0c0c0;
+    border-radius: 3px;
+    box-shadow: 0 1px 1px #aaa;
+    text-decoration: none;
+    color: black;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  .yellow-btn:hover {
+    background: linear-gradient(#fffec0, #d4b400);
+  }
+  
+  .web-btn {
+    color: #0000cc;
+    text-decoration: underline;
+    font-size: 15px;
+  }
+  
+  /* RESULTS AREA */
+  #results {
+    margin-top: 40px;
+    font-family: Arial;
+    width: 600px;
+    max-width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    overflow-x: hidden !important;
+    padding: 0 10px;
+  }
+  
+  /* FOOTER */
+  .footer {
+    margin-top: 80px;
+    font-size: 12px;
+    color: #777;
+    padding: 0 12px;
+  }
+  
+  a {
+    font-size: 12px;
+    color: blue;
+  }
+  
+  
+  /* 📱 MOBILE MODE SUPER-TIGHT FIX */
+  @media (max-width: 600px) {
   
     body {
-      background-color: #ffffff;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 120px;
+      margin-top: 50px;
     }
   
     .logo {
-      font-family: "Times New Roman", serif;
-      font-size: 64px;
-      color: black;
-      letter-spacing: 2px;
+      font-size: 32px;
+      letter-spacing: 1px;
     }
   
-    .search-box {
-      margin-top: 30px;
-    }
-  
+    /* Search bar almost full width but smaller */
     input[type="text"] {
-      width: 480px;
-      max-width: 90%;
-      height: 34px;
-      font-size: 16px;
-      padding: 4px 10px;
-      border: 1px solid #b5b5b5;
-      border-radius: 2px;
-      background-color: #ffffff;
-      display: block;
-      margin: 0 auto;
+      max-width: 92%;
+      height: 30px;
+      font-size: 14px;
+      padding: 3px 8px;
     }
   
     .yellow-btn {
-      display: inline-block;
-      padding: 6px 18px;
-      margin: 6px 0;
-      background: linear-gradient(#fff6a0,#e1c100);
-      border: 1px solid #c0c0c0;
-      border-radius: 3px;
-      box-shadow: 0 1px 1px #aaa;
-      text-decoration: none;
-      color: black;
-      font-size: 14px;
-      cursor: pointer;
-    }
-  
-    .yellow-btn:hover {
-      background: linear-gradient(#fffec0, #d4b400);
-    }
-  
-    .web-btn {
-      color: #0000cc;
-      text-decoration: underline;
-      font-size: 15px;
+      padding: 5px 12px;
+      font-size: 12px;
     }
   
     #results {
-      margin-top: 40px;
-      font-family: Arial;
-      width: 600px;
-      max-width: 95%;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: left;
-      overflow-x: hidden; /* Prevent horizontal scroll inside results */
+      max-width: 92%;
+      padding: 0 5px;
+    }
+  
+    #results h3 {
+      font-size: 16px;
+    }
+  
+    #results p,
+    #results li {
+      font-size: 13px;
+      line-height: 1.3;
     }
   
     .footer {
-      margin-top: 80px;
-      font-size: 12px;
-      color: #777;
-      padding: 0 10px;
+      font-size: 10px;
+      margin-top: 50px;
     }
+  }
   
-    a {
-      font-size: 12px;
-      color: blue;
-    }
-  
-    /* Mobile responsiveness */
-    @media (max-width: 600px) {
-      body {
-        margin-top: 60px;
-      }
-  
-      .logo {
-        font-size: 40px;
-      }
-  
-      input[type="text"] {
-        font-size: 14px;
-        height: 32px;
-      }
-  
-      #results h3 {
-        font-size: 18px;
-      }
-  
-      #results p,
-      #results li {
-        font-size: 14px;
-        line-height: 1.4;
-      }
-  
-      .yellow-btn {
-        font-size: 13px;
-        padding: 5px 14px;
-      }
-    }
   </style>
-  
 
 </head>
 <body>
@@ -232,6 +254,7 @@
   </script>
 </body>
 </html>
+
 
 
 
