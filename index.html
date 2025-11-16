@@ -148,6 +148,8 @@
   <div class="footer">© 2025 Searcher Search Engine · Powered by <a href="https://www.duckduckgo.com" target="_blank">DuckDuckGo</a> & <a href="https://www.wikipedia.com" target="_blank">Wikipedia</a></div>
   
   <script>
+    const UNSPLASH_ACCESS_KEY = "YOUR_UNSPLASH_ACCESS_KEY"; // Unsplash API key yahan daalo
+  
     async function fetchSearch(q) {
       let url = `https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&no_html=1&no_redirect=1`;
       let res = await fetch(url);
@@ -156,15 +158,20 @@
   
     async function fetchWiki(q) {
       let wikiApi = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(q)}`;
-      let fandomApi = `https://community.fandom.com/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&utf8=1`; 
-      let wikiData = null;
-      let fandomData = null;
+      let fandomApi = `https://community.fandom.com/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&utf8=1`;
+      let wikiData = null, fandomData = null;
       try { wikiData = await (await fetch(wikiApi)).json(); } catch {}
       try { fandomData = await (await fetch(fandomApi)).json(); } catch {}
-      return {wikiData, fandomData};
+      return { wikiData, fandomData };
     }
   
-    function yellowBtn(url, text){
+    async function fetchImages(q) {
+      const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&client_id=${UNSPLASH_ACCESS_KEY}&per_page=10`;
+      let res = await fetch(url);
+      return await res.json();
+    }
+  
+    function yellowBtn(url, text) {
       return `<a href='${url}' target='_blank' class='yellow-btn'>${text}</a>`;
     }
   
@@ -178,24 +185,29 @@
       let resDiv = document.getElementById("results");
       resDiv.innerHTML = `<h2 style='font-family:"Times New Roman";'>Searching "${q}"...</h2>`;
   
-      if(isDomainOrURL(q)){
+      if (isDomainOrURL(q)) {
         let fullUrl = q;
-        if(!/^https?:\/\//i.test(q)) fullUrl = 'https://' + q;
+        if (!/^https?:\/\//i.test(q)) fullUrl = "https://" + q;
         try {
-          await fetch(fullUrl, {method:'HEAD', mode:'no-cors'});
+          await fetch(fullUrl, { method: "HEAD", mode: "no-cors" });
           resDiv.innerHTML = `<p>Landing to ${fullUrl}...</p>`;
-          setTimeout(()=>{ window.location.href = fullUrl; }, 1000);
+          setTimeout(() => { window.location.href = fullUrl; }, 1000);
         } catch {
           resDiv.innerHTML = `<p>The URL you typed was incorrect or doesn't exist</p>`;
         }
         return;
       }
   
-      let {wikiData, fandomData} = await fetchWiki(q);
-      let searchData = await fetchSearch(q);
+      let [ { wikiData, fandomData }, searchData, imageData ] = await Promise.all([
+        fetchWiki(q),
+        fetchSearch(q),
+        fetchImages(q)
+      ]);
+  
       let links = searchData.RelatedTopics;
       let html = `<h3>Showing results of: "${q}"</h3>`;
   
+      // Websites
       html += `<h3>Websites</h3><ul>`;
       let anyResult = false;
       for (let i = 0; i < links.length && i < 10; i++) {
@@ -206,42 +218,58 @@
       }
       html += `</ul>`;
   
-      // Check if no results anywhere
+      // Researches
       let researchFound = false;
-      if(wikiData && wikiData.extract) researchFound = true;
-      if(fandomData && fandomData.query && fandomData.query.search && fandomData.query.search.length) researchFound = true;
+      html += `<h3>Researches</h3>`;
+      if (wikiData && wikiData.extract) {
+        researchFound = true;
+        let lines = wikiData.extract.split(". ").slice(0, 8).join(". ") + ".";
+        html += `<p>${lines}</p>`;
+        if (wikiData.content_urls && wikiData.content_urls.desktop && wikiData.content_urls.desktop.page) {
+          html += yellowBtn(wikiData.content_urls.desktop.page, "Read Full Wikipedia Article");
+        }
+      }
+      if (fandomData && fandomData.query && fandomData.query.search && fandomData.query.search.length) {
+        researchFound = true;
+        let items = fandomData.query.search.slice(0, 3);
+        for (let item of items) {
+          html += `<p><a class='web-btn' href='https://community.fandom.com/wiki/${encodeURIComponent(item.title)}' target='_blank'>${item.title} - Fandom</a></p>`;
+        }
+      }
   
-      if(!anyResult && !researchFound){
+      if (!anyResult && !researchFound) {
         html += `<p>No results found for "${q}"</p><br>
                  <button class='yellow-btn' onclick='searchAgain("${q}")'>Try Again</button>`;
       }
   
-      html += `<h3>Researches</h3>`;
-      if(wikiData && wikiData.extract){
-        let lines = wikiData.extract.split(". ").slice(0,8).join(". ") + ".";
-        html += `<p>${lines}</p>`;
-        if(wikiData.content_urls && wikiData.content_urls.desktop && wikiData.content_urls.desktop.page){
-          html += yellowBtn(wikiData.content_urls.desktop.page, "Read Full Wikipedia Article");
+      // Images section
+      html += `<h3>Images</h3>`;
+      if (imageData && imageData.results && imageData.results.length > 0) {
+        html += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px;">`;
+        for (let img of imageData.results) {
+          html += `
+            <a href="${img.links.html}" target="_blank" title="Photo by ${img.user.name}">
+              <img src="${img.urls.thumb}" alt="${img.alt_description || img.description || ''}" style="width:100%; height:auto; object-fit:cover;" />
+            </a>
+          `;
         }
-      }
-      if(fandomData && fandomData.query && fandomData.query.search && fandomData.query.search.length){
-        let items = fandomData.query.search.slice(0,3);
-        for(let item of items){
-          html += `<p><a class='web-btn' href='https://community.fandom.com/wiki/${encodeURIComponent(item.title)}' target='_blank'>${item.title} - Fandom</a></p>`;
-        }
+        html += `</div>`;
+      } else {
+        html += `<p>No images found for "${q}"</p>`;
       }
   
       resDiv.innerHTML = html;
     }
   
     function searchAgain(q) {
-      document.getElementById("query").value = q; // refill input
-      search(new Event('submit')); // trigger search function
+      document.getElementById("query").value = q;
+      search(new Event("submit"));
     }
   </script>
 
 </body>
 </html>
+
 
 
 
