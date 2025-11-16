@@ -1,282 +1,291 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
-  <title>Searcher</title>
-  <style>
-    /* General styles */
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      overflow-x: hidden; /* Prevent horizontal scroll */
-      font-family: Arial, sans-serif;
-      background-color: #ffffff;
-      text-align: center;
-    }
-  
-    .logo {
-      font-family: "Times New Roman", serif;
-      font-size: 64px;
-      color: black;
-      letter-spacing: 2px;
-      margin-top: 40px;
-    }
-  
-    form.search-box {
-      margin: 30px auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 90%;
-      max-width: 480px; /* Keeps it reasonable on large screens */
-    }
-  
-    input[type="text"] {
-      width: 100%;
-      max-width: 480px;
-      height: 34px;
-      font-size: 16px;
-      padding: 6px 10px;
-      border: 1px solid #b5b5b5;
-      border-radius: 2px;
-      background-color: #ffffff;
-      box-sizing: border-box;
-    }
-  
-    .yellow-btn {
-      display: inline-block;
-      padding: 6px 18px;
-      margin: 6px 0;
-      background: linear-gradient(#fff6a0,#e1c100);
-      border: 1px solid #c0c0c0;
-      border-radius: 3px;
-      box-shadow: 0 1px 1px #aaa;
-      text-decoration: none;
-      color: black;
-      font-size: 14px;
-      cursor: pointer;
-    }
-  
-    .yellow-btn:hover {
-      background: linear-gradient(#fffec0, #d4b400);
-    }
-  
-    .web-btn {
-      color: #0000cc;
-      text-decoration: underline;
-      font-size: 15px;
-    }
-  
-    #results {
-      margin: 40px auto;
-      font-family: Arial;
-      width: 90%;
-      max-width: 600px;
-      text-align: left;
-    }
-  
-    #results ul {
-      padding-left: 20px;
-    }
-  
-    #results li {
-      margin-bottom: 8px;
-    }
-  
-    .footer {
-      margin-top: 60px;
-      font-size: 12px;
-      color: #777;
-    }
-  
-    .footer a {
-      color: blue;
-      text-decoration: none;
-    }
-  
-    /* Responsive styles */
-    @media screen and (max-width: 600px) {
-      .logo {
-        font-size: 36px;
-        margin-top: 20px;
-      }
-  
-      form.search-box {
-        width: 95%;
-      }
-  
-      input[type="text"] {
-        height: 32px;
-        font-size: 14px;
-        padding: 5px 8px;
-      }
-  
-      .yellow-btn {
-        font-size: 13px;
-        padding: 5px 12px;
-      }
-  
-      #results {
-        width: 95%;
-      }
-  
-      #results h3, #results p, #results li {
-        font-size: 14px;
-      }
-  
-      .web-btn {
-        font-size: 14px;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+<title>Searcher</title>
+<style>
+  /* General styles */
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    text-align: center;
+  }
 
+  .logo {
+    font-family: "Times New Roman", serif;
+    font-size: 64px;
+    color: black;
+    letter-spacing: 2px;
+    margin-top: 40px;
+  }
+
+  form.search-box {
+    margin: 30px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 480px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    max-width: 480px;
+    height: 34px;
+    font-size: 16px;
+    padding: 6px 10px;
+    border: 1px solid #b5b5b5;
+    border-radius: 2px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+  }
+
+  .yellow-btn {
+    display: inline-block;
+    padding: 6px 18px;
+    margin: 6px 0;
+    background: linear-gradient(#fff6a0,#e1c100);
+    border: 1px solid #c0c0c0;
+    border-radius: 3px;
+    box-shadow: 0 1px 1px #aaa;
+    text-decoration: none;
+    color: black;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .yellow-btn:hover {
+    background: linear-gradient(#fffec0, #d4b400);
+  }
+
+  .web-btn {
+    color: #0000cc;
+    text-decoration: underline;
+    font-size: 15px;
+  }
+
+  #results {
+    margin: 40px auto;
+    font-family: Arial;
+    width: 90%;
+    max-width: 600px;
+    text-align: left;
+  }
+
+  #results ul {
+    padding-left: 20px;
+  }
+
+  #results li {
+    margin-bottom: 8px;
+  }
+
+  .footer {
+    margin-top: 60px;
+    font-size: 12px;
+    color: #777;
+  }
+
+  .footer a {
+    color: blue;
+    text-decoration: none;
+  }
+
+  /* Tabs style */
+  #tab-nav {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 8px;
+  }
+
+  .tab-btn {
+    padding: 6px 18px;
+    border: 1px solid #c0c0c0;
+    border-radius: 3px;
+    font-size: 14px;
+    cursor: pointer;
+    background: linear-gradient(#e0e0e0, #a0a0a0); /* gray for inactive */
+    color: black;
+  }
+
+  .tab-btn.active {
+    background: linear-gradient(#fff6a0, #e1c100);
+    box-shadow: 0 1px 1px #aaa;
+  }
+
+  /* Responsive */
+  @media screen and (max-width: 600px) {
+    .logo {
+      font-size: 36px;
+      margin-top: 20px;
+    }
+
+    form.search-box {
+      width: 95%;
+    }
+
+    input[type="text"] {
+      height: 32px;
+      font-size: 14px;
+      padding: 5px 8px;
+    }
+
+    .yellow-btn {
+      font-size: 13px;
+      padding: 5px 12px;
+    }
+
+    #results {
+      width: 95%;
+    }
+
+    #results h3, #results p, #results li {
+      font-size: 14px;
+    }
+
+    .web-btn {
+      font-size: 14px;
+    }
+  }
+</style>
 </head>
 <body>
-  <div class="logo">Searcher</div>
+<div class="logo">Searcher</div>
 
-  <form class="search-box" onsubmit="search(event)">
-    <input type="text" id="query" placeholder="Search the web or type URL..." required />
-    <br />
-    <input type="submit" class="yellow-btn" value="Search" />
-  </form>
+<form class="search-box" onsubmit="search(event)">
+  <input type="text" id="query" placeholder="Search the web or type URL..." required />
+  <br />
+  <input type="submit" class="yellow-btn" value="Search" />
+</form>
 
-  <div id="results"></div>
+<!-- Tabs -->
+<div id="tab-nav">
+  <button class="tab-btn active" data-tab="websites">Websites</button>
+  <button class="tab-btn" data-tab="researches">Researches</button>
+  <button class="tab-btn" data-tab="images">Images</button>
+</div>
 
-  <div class="footer">© 2025 Searcher Search Engine · Powered by <a href="https://www.duckduckgo.com" target="_blank">DuckDuckGo</a> & <a href="https://www.wikipedia.com" target="_blank">Wikipedia</a></div>
-  
-  <script>
-    const UNSPLASH_ACCESS_KEY = "Fn4A0JL0bDEuhFW_n86GzsPC1nuCTXbePvxNoX9dPXE"; // Unsplash API key yahan daalo
-  
-    async function fetchSearch(q) {
-      let url = `https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&no_html=1&no_redirect=1`;
-      let res = await fetch(url);
-      return await res.json();
-    }
-  
-    async function fetchWiki(q) {
-      let wikiApi = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(q)}`;
-      let fandomApi = `https://community.fandom.com/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&utf8=1`;
-      let wikiData = null, fandomData = null;
-      try { wikiData = await (await fetch(wikiApi)).json(); } catch {}
-      try { fandomData = await (await fetch(fandomApi)).json(); } catch {}
-      return { wikiData, fandomData };
-    }
-  
-    async function fetchImages(q) {
-      const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&client_id=${UNSPLASH_ACCESS_KEY}&per_page=10`;
-      let res = await fetch(url);
-      return await res.json();
-    }
-  
-    function yellowBtn(url, text) {
-      return `<a href='${url}' target='_blank' class='yellow-btn'>${text}</a>`;
-    }
-  
-    function isDomainOrURL(str) {
-      return /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/.*)?$/.test(str);
-    }
-  
-    async function search(e) {
-      e.preventDefault();
-      let q = document.getElementById("query").value.trim();
-      let resDiv = document.getElementById("results");
-      resDiv.innerHTML = `<h2 style='font-family:"Times New Roman";'>Searching "${q}"...</h2>`;
-  
-      if (isDomainOrURL(q)) {
-        let fullUrl = q;
-        if (!/^https?:\/\//i.test(q)) fullUrl = "https://" + q;
-        try {
-          await fetch(fullUrl, { method: "HEAD", mode: "no-cors" });
-          resDiv.innerHTML = `<p>Landing to ${fullUrl}...</p>`;
-          setTimeout(() => { window.location.href = fullUrl; }, 1000);
-        } catch {
-          resDiv.innerHTML = `<p>The URL you typed was incorrect or doesn't exist</p>`;
-        }
-        return;
-      }
-  
-      let [ { wikiData, fandomData }, searchData, imageData ] = await Promise.all([
-        fetchWiki(q),
-        fetchSearch(q),
-        fetchImages(q)
-      ]);
-  
-      let links = searchData.RelatedTopics;
-      let html = `<h3>Showing results of: "${q}"</h3>`;
-  
-      // Websites
-      html += `<h3>Websites</h3><ul>`;
-      let anyResult = false;
-      for (let i = 0; i < links.length && i < 10; i++) {
-        if (links[i].FirstURL) {
-          anyResult = true;
-          html += `<li><a class='web-btn' href='${links[i].FirstURL}' target='_blank'>${links[i].Text}</a></li>`;
-        }
-      }
-      html += `</ul>`;
-  
-      // Researches
-      let researchFound = false;
-      html += `<h3>Researches</h3>`;
-      if (wikiData && wikiData.extract) {
-        researchFound = true;
-        let lines = wikiData.extract.split(". ").slice(0, 8).join(". ") + ".";
-        html += `<p>${lines}</p>`;
-        if (wikiData.content_urls && wikiData.content_urls.desktop && wikiData.content_urls.desktop.page) {
-          html += yellowBtn(wikiData.content_urls.desktop.page, "Read Full Wikipedia Article");
-        }
-      }
-      if (fandomData && fandomData.query && fandomData.query.search && fandomData.query.search.length) {
-        researchFound = true;
-        let items = fandomData.query.search.slice(0, 3);
-        for (let item of items) {
-          html += `<p><a class='web-btn' href='https://community.fandom.com/wiki/${encodeURIComponent(item.title)}' target='_blank'>${item.title} - Fandom</a></p>`;
-        }
-      }
-  
-      if (!anyResult && !researchFound) {
-        html += `<p>No results found for "${q}"</p><br>
-                 <button class='yellow-btn' onclick='searchAgain("${q}")'>Try Again</button>`;
-      }
-  
-      // Images section
-      html += `<h3>Images</h3>`;
-      if (imageData && imageData.results && imageData.results.length > 0) {
-        html += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px;">`;
-        for (let img of imageData.results) {
-          html += `
-            <a href="${img.links.html}" target="_blank" title="Photo by ${img.user.name}">
-              <img src="${img.urls.thumb}" alt="${img.alt_description || img.description || ''}" style="width:100%; height:auto; object-fit:cover;" />
-            </a>
-          `;
-        }
-        html += `</div>`;
-      } else {
-        html += `<p>No images found for "${q}"</p>`;
-      }
-  
-      resDiv.innerHTML = html;
-    }
-  
-    function searchAgain(q) {
-      document.getElementById("query").value = q;
-      search(new Event("submit"));
-    }
-  </script>
+<div id="results"></div>
 
+<div class="footer">© 2025 Searcher Search Engine · Powered by <a href="https://www.duckduckgo.com" target="_blank">DuckDuckGo</a> & <a href="https://www.wikipedia.com" target="_blank">Wikipedia</a></div>
+
+<script>
+const UNSPLASH_ACCESS_KEY = "Fn4A0JL0bDEuhFW_n86GzsPC1nuCTXbePvxNoX9dPXE"; // Unsplash API key
+
+let cachedResults = { websites: [], researches: [], images: [] };
+
+async function fetchSearch(q) {
+  let url = `https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&no_html=1&no_redirect=1`;
+  let res = await fetch(url);
+  return await res.json();
+}
+
+async function fetchWiki(q) {
+  let wikiApi = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(q)}`;
+  let fandomApi = `https://community.fandom.com/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&utf8=1`;
+  let wikiData=null,fandomData=null;
+  try { wikiData = await (await fetch(wikiApi)).json(); } catch {}
+  try { fandomData = await (await fetch(fandomApi)).json(); } catch {}
+  return { wikiData, fandomData };
+}
+
+async function fetchImages(q) {
+  const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&client_id=${UNSPLASH_ACCESS_KEY}&per_page=20`;
+  let res = await fetch(url);
+  return await res.json();
+}
+
+function yellowBtn(url, text) {
+  return `<a href='${url}' target='_blank' class='yellow-btn'>${text}</a>`;
+}
+
+function isDomainOrURL(str) {
+  return /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/.*)?$/.test(str);
+}
+
+async function search(e) {
+  e.preventDefault();
+  let q = document.getElementById("query").value.trim();
+  let resDiv = document.getElementById("results");
+  resDiv.innerHTML = `<h2 style='font-family:"Times New Roman";'>Searching "${q}"...</h2>`;
+
+  if(isDomainOrURL(q)){
+    let fullUrl=q;
+    if(!/^https?:\/\//i.test(q)) fullUrl='https://'+q;
+    try{await fetch(fullUrl,{method:'HEAD',mode:'no-cors'}); resDiv.innerHTML=`<p>Landing to ${fullUrl}...</p>`; setTimeout(()=>{window.location.href=fullUrl;},1000);}catch{resDiv.innerHTML=`<p>The URL you typed was incorrect or doesn't exist</p>`;}
+    return;
+  }
+
+  let [ {wikiData,fandomData}, searchData, imageData ] = await Promise.all([fetchWiki(q), fetchSearch(q), fetchImages(q)]);
+
+  // Cache websites
+  cachedResults.websites = [];
+  let links = searchData.RelatedTopics;
+  for(let i=0;i<links.length && i<10;i++){
+    if(links[i].FirstURL) cachedResults.websites.push({url:links[i].FirstURL,text:links[i].Text});
+  }
+
+  // Cache researches
+  cachedResults.researches = [];
+  if(wikiData && wikiData.extract){
+    let lines = wikiData.extract.split(". ").slice(0,8).join(". ")+".";
+    cachedResults.researches.push({type:'wiki', content:lines, url:wikiData.content_urls?.desktop?.page});
+  }
+  if(fandomData && fandomData.query && fandomData.query.search && fandomData.query.search.length){
+    fandomData.query.search.slice(0,3).forEach(item=>cachedResults.researches.push({type:'fandom',title:item.title,url:'https://community.fandom.com/wiki/'+encodeURIComponent(item.title)}));
+  }
+
+  // Cache images
+  cachedResults.images = [];
+  if(imageData && imageData.results && imageData.results.length>0) cachedResults.images = imageData.results;
+
+  showTab('websites'); // default
+}
+
+function showTab(tab){
+  let resDiv=document.getElementById("results");
+  document.querySelectorAll('.tab-btn').forEach(btn=>{btn.classList.toggle('active',btn.dataset.tab===tab);});
+
+  let html='';
+  if(tab==='websites'){
+    if(cachedResults.websites.length){
+      html='<ul>';
+      cachedResults.websites.forEach(link=>{html+=`<li><a class='web-btn' href='${link.url}' target='_blank'>${link.text}</a></li>`;});
+      html+='</ul>';
+    }else html=`<p>No websites found</p>`;
+  } else if(tab==='researches'){
+    if(cachedResults.researches.length){
+      cachedResults.researches.forEach(item=>{
+        if(item.type==='wiki'){
+          html+=`<p>${item.content}</p>`;
+          if(item.url) html+=yellowBtn(item.url,"Read Full Wikipedia Article");
+        } else if(item.type==='fandom') html+=`<p><a class='web-btn' href='${item.url}' target='_blank'>${item.title} - Fandom</a></p>`;
+      });
+    }else html=`<p>No research found</p>`;
+  } else if(tab==='images'){
+    if(cachedResults.images.length){
+      html+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;">`;
+      cachedResults.images.forEach(img=>{
+        html+=`<a href="${img.links.html}" target="_blank" title="Photo by ${img.user.name}">
+                 <img src="${img.urls.thumb}" alt="${img.alt_description||img.description||''}" style="width:100%;height:auto;object-fit:cover;" />
+               </a>`;
+      });
+      html+='</div>';
+    }else html=`<p>No images found</p>`;
+  }
+  resDiv.innerHTML=html;
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>showTab(btn.dataset.tab)));
+
+function searchAgain(q){document.getElementById("query").value=q;search(new Event("submit"));}
+</script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
