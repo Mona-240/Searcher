@@ -146,42 +146,38 @@
   <div id="results"></div>
 
   <div class="footer">© 2025 Searcher Search Engine · Powered by <a href="https://www.duckduckgo.com" target="_blank">DuckDuckGo</a> & <a href="https://www.wikipedia.com" target="_blank">Wikipedia</a></div>
-
+  
   <script>
     async function fetchSearch(q) {
       let url = `https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&no_html=1&no_redirect=1`;
       let res = await fetch(url);
       return await res.json();
     }
-
+  
     async function fetchWiki(q) {
       let wikiApi = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(q)}`;
       let fandomApi = `https://community.fandom.com/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&utf8=1`; 
       let wikiData = null;
       let fandomData = null;
-      try {
-        wikiData = await (await fetch(wikiApi)).json();
-      } catch {}
-      try {
-        fandomData = await (await fetch(fandomApi)).json();
-      } catch {}
+      try { wikiData = await (await fetch(wikiApi)).json(); } catch {}
+      try { fandomData = await (await fetch(fandomApi)).json(); } catch {}
       return {wikiData, fandomData};
     }
-
+  
     function yellowBtn(url, text){
       return `<a href='${url}' target='_blank' class='yellow-btn'>${text}</a>`;
     }
-
+  
     function isDomainOrURL(str) {
       return /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/.*)?$/.test(str);
     }
-
+  
     async function search(e) {
       e.preventDefault();
       let q = document.getElementById("query").value.trim();
       let resDiv = document.getElementById("results");
       resDiv.innerHTML = `<h2 style='font-family:"Times New Roman";'>Searching "${q}"...</h2>`;
-
+  
       if(isDomainOrURL(q)){
         let fullUrl = q;
         if(!/^https?:\/\//i.test(q)) fullUrl = 'https://' + q;
@@ -194,12 +190,12 @@
         }
         return;
       }
-
+  
       let {wikiData, fandomData} = await fetchWiki(q);
       let searchData = await fetchSearch(q);
       let links = searchData.RelatedTopics;
       let html = `<h3>Showing results of: "${q}"</h3>`;
-
+  
       html += `<h3>Websites</h3><ul>`;
       let anyResult = false;
       for (let i = 0; i < links.length && i < 10; i++) {
@@ -209,14 +205,21 @@
         }
       }
       html += `</ul>`;
-      if(!anyResult) html += `<p>No additional results found about "${q}"</p><br><button class='yellow-btn' onclick='window.open(\`https://www.google.com/search?q=${encodeURIComponent(q)}\`, "_blank")'>Try searching on Google</button>`;
-
-      html += `<h3>Researches</h3>`;
+  
+      // Check if no results anywhere
       let researchFound = false;
+      if(wikiData && wikiData.extract) researchFound = true;
+      if(fandomData && fandomData.query && fandomData.query.search && fandomData.query.search.length) researchFound = true;
+  
+      if(!anyResult && !researchFound){
+        html += `<p>No results found for "${q}"</p><br>
+                 <button class='yellow-btn' onclick='searchAgain("${q}")'>Try Again</button>`;
+      }
+  
+      html += `<h3>Researches</h3>`;
       if(wikiData && wikiData.extract){
         let lines = wikiData.extract.split(". ").slice(0,8).join(". ") + ".";
         html += `<p>${lines}</p>`;
-        researchFound = true;
         if(wikiData.content_urls && wikiData.content_urls.desktop && wikiData.content_urls.desktop.page){
           html += yellowBtn(wikiData.content_urls.desktop.page, "Read Full Wikipedia Article");
         }
@@ -226,15 +229,20 @@
         for(let item of items){
           html += `<p><a class='web-btn' href='https://community.fandom.com/wiki/${encodeURIComponent(item.title)}' target='_blank'>${item.title} - Fandom</a></p>`;
         }
-        researchFound = true;
       }
-      if(!researchFound) html += `<p>No research found about "${q}"</p>`;
-
+  
       resDiv.innerHTML = html;
     }
+  
+    function searchAgain(q) {
+      document.getElementById("query").value = q; // refill input
+      search(new Event('submit')); // trigger search function
+    }
   </script>
+
 </body>
 </html>
+
 
 
 
